@@ -1,2 +1,1 @@
-# Thisgree
-Only a person who live in eartg
+Repo for my profile vola i was made
