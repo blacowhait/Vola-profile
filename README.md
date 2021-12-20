@@ -29,7 +29,24 @@ docker run --name profile volatility<DISTRO-VERSION>
 docker cp profile:<DISTRO-VERSION>-<KERNEL-VERSION>.zip /root/<DISTRO-VERSION>-<KERNEL-VERSION>.zip
 ```
 3. Move profile to volatility folder
-4. for example [Dockerfile](Dockerfile)
+4. for example [Dockerfile](Dockerfile) and example another distro
+```
+FROM alpine:3.12.6
+
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/main" >> /etc/apk/repositories
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/community" >> /etc/apk/repositories
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+
+RUN apk update
+RUN apk add zip git gcc libgcc make  libdwarf-dev  dwarf-tools  libdwarf 
+RUN apk add linux-lts-dev linux-lts
+
+RUN git clone https://github.com/volatilityfoundation/volatility.git
+RUN sed -i 's/$(shell uname -r)/5.4.143-0-lts/' volatility/tools/linux/Makefile
+RUN cd volatility/tools/linux/ && make
+# RUN ls -lah /boot
+RUN zip /profile.zip volatility/tools/linux/module.dwarf /boot/System.map-lts
+```
 
 ## Manual
 use virtualBox with target linux version
